@@ -1,0 +1,244 @@
+<ng-container *ngIf="!employeeData && !addEmployee && !generateReport">
+
+    <div class="row justify-content-center py-5">
+      <div class="alert alert-secondary border-secondary col-sm-11 col-md-8 text-center text-muted" role="alert">
+        <i class="fa fa-mouse-pointer mr-1" aria-hidden="true"></i>
+        Please select an employee
+      </div>
+    </div>
+  </ng-container>
+  
+  <ng-container *ngIf="employeeData || addEmployee || generateReport">
+    <div class="row justify-content-center mt-4">
+      <div class="col">
+        <div class="card border-secondary">
+  
+          <!-- Card Header when selecting a employee: holding the employee username and  & name -->
+          <h4 class="card-header bg-secondary" *ngIf="employeeData && !addEmployee && !generateReport">
+            {{ employeeData.name }} 
+          </h4>
+          <!-- End: Card Header -->
+  
+           <!-- Card Header when pressing add new employee button: holding descriptive text -->
+           <h4 class="card-header bg-secondary" *ngIf="!employeeData && addEmployee && !generateReport">
+            {{"Add new employee"}}
+          </h4>
+          <!-- End: Card Header -->
+
+          <!-- Card Header when pressing generate report button: holding descriptive text -->
+          <h4 class="card-header bg-secondary" *ngIf="!employeeData && !addEmployee && generateReport">
+              {{"Generate Employee Report"}}
+            </h4>
+            <!-- End: Card Header -->
+  
+          <!-- Card Body: holding the editable employee fields -->
+          <div class="card-body">
+            <div class="my-4">
+              
+              <!--Card Body when add new employee button is pressed: one form is added, i.e. ssn-->
+              <div class="row">
+                <div class="col">
+                  <div class="form-group">
+                    <label *ngIf="employeeData && !addEmployee && !generateReport" class="col-form-label" for="inputLarge">Username</label>
+                    <input *ngIf="employeeData && !addEmployee && !generateReport" class="form-control" type="text" name="username" required [(ngModel)]="employeeData.username">
+                    <mat-form-field *ngIf="!employeeData && addEmployee || generateReport" class="mat-input-form" type="text" name="username" appearance="outline">
+                        <mat-label>Username</mat-label>
+                        <input matInput [formControl]="username" required>
+                        <mat-error *ngIf="username.invalid">{{getUsernameErrorMessage()}}</mat-error>
+                        <mat-hint *ngIf="username.untouched">Enter a username</mat-hint>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div *ngIf="!employeeData && !addEmployee && generateReport" class="col">
+                    <div class="form-group">
+                      <mat-form-field *ngIf="!employeeData && !addEmployee && generateReport">
+                        <mat-select placeholder="Report type" (selectionChange)="reportTypeSelect($event.value)" [formControl]="reportType" required>
+                              <mat-option>-Select an option-</mat-option>
+                              <mat-option *ngFor="let type of reportTypes" [value]="type">
+                                {{type}}
+                              </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="reportType.hasError('required')">Please choose a report type</mat-error>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                <div *ngIf="!employeeData && addEmployee && !generateReport" class="col">
+                    <div class="form-group">
+                      <mat-form-field class="mat-input-form" type="text" name="password" appearance="outline">
+                          <mat-label>Password</mat-label>
+                          <input matInput [formControl]="password" required>
+                          <mat-error *ngIf="password.invalid">{{getPasswordErrorMessage()}}</mat-error>
+                          <mat-hint *ngIf="password.untouched">Enter a password</mat-hint>
+                      </mat-form-field>
+                    </div>
+                </div>
+                <div *ngIf="employeeData && !addEmployee && !generateReport" class="col">
+                  <div class="form-group">
+                    <label *ngIf="employeeData && !addEmployee && !generateReport" class="col-form-label" for="inputLarge">Full name</label>
+                    <input *ngIf="employeeData && !addEmployee && !generateReport" class="form-control" type="text" name="name" required [(ngModel)]="employeeData.name">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" *ngIf="!employeeData && addEmployee && !generateReport">
+                <div  class="col">
+                    <div class="form-group">
+                      <mat-form-field  class="mat-input-form" type="text" name="name" appearance="outline">
+                          <mat-label>Full Name</mat-label>
+                          <input matInput [formControl]="name" required>
+                          <mat-error *ngIf="name.invalid">{{getNameErrorMessage()}}</mat-error>
+                          <mat-hint *ngIf="name.untouched">Enter employee full name</mat-hint>
+                      </mat-form-field>
+                    </div>
+                  </div>
+              </div>
+
+              <div *ngIf="generateReport" class="row">
+                  <div class="col">
+                      <div class="form-group">
+                          <mat-form-field *ngIf="!employeeData && !addEmployee && generateReport" class="mat-input-form" type="text" name="fromDate" appearance="outline">
+                              <mat-label>From Date</mat-label>
+                              <input matInput [formControl]="fromDate" required>
+                              <mat-error *ngIf="fromDate.invalid">{{getFromDateErrorMessage()}}</mat-error>
+                              <mat-hint *ngIf="fromDate.untouched">From date format: dd-mm-yyyy</mat-hint>
+                          </mat-form-field>
+                      </div>
+                  </div>
+                  <div class="col">
+                        <div class="form-group">
+                            <mat-form-field *ngIf="!employeeData && !addEmployee && generateReport" class="mat-input-form" type="text" name="toDate" appearance="outline">
+                                <mat-label>To Date</mat-label>
+                                <input matInput [formControl]="toDate" required>
+                                <mat-error *ngIf="toDate.invalid">{{getToDateErrorMessage()}}</mat-error>
+                                <mat-hint *ngIf="toDate.untouched">To date format: dd-mm-yyyy</mat-hint>
+                            </mat-form-field>
+                        </div>
+                  </div>
+              </div>
+
+              <!--The rest of the forms appear, regardless if a employee is selected, or the add employee button-->
+              <div *ngIf="!generateReport" class="row">
+                <div  class="col">
+                  <div class="form-group">
+                      <label *ngIf="employeeData && !addEmployee && !generateReport" class="col-form-label" for="inputLarge">User type</label>
+                      <input *ngIf="employeeData && !addEmployee && !generateReport" class="form-control" type="text" name="type" required [(ngModel)]="employeeData.type">
+                      <mat-form-field *ngIf="!employeeData && addEmployee && !generateReport">
+                          <mat-select placeholder="User Type" (selectionChange)="userTypeSelect($event.value)" [formControl]="typeForm" required>
+                                <mat-option>-Select an option-</mat-option>
+                                <mat-option *ngFor="let type of userTypes" [value]="type">
+                                  {{type}}
+                                </mat-option>
+                          </mat-select>
+                          <mat-error *ngIf="typeForm.hasError('required')">Please choose an employee type</mat-error>
+                      </mat-form-field>
+                  </div>
+                </div>
+                
+                <div class="col">
+                  <div class="form-group">
+                      <label *ngIf="employeeData && !addEmployee && !generateReport" class="col-form-label" for="inputLarge">Hiring date</label>
+                      <input *ngIf="employeeData && !addEmployee && !generateReport" class="form-control" type="text" name="firstName" required [(ngModel)]="employeeData.hiring_date" [readOnly]="true">
+                      <mat-form-field *ngIf="!employeeData && addEmployee && !generateReport" class="mat-input-form" type="text" name="hiring_date" appearance="outline">
+                          <mat-label>Hiring Date</mat-label>
+                          <input matInput [formControl]="hiring_date" required>
+                          <mat-error *ngIf="hiring_date">{{getHiringDateErrorMessage()}}</mat-error>
+                          <mat-hint *ngIf="hiring_date">Hire date format: dd-mm-yyyy</mat-hint>
+                      </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div  class="row">
+                <div *ngIf="!generateReport" class="col">
+                  <div class="form-group">
+                    <label *ngIf="employeeData && !addEmployee && !generateReport" class="col-form-label" for="inputLarge">Telephone</label>
+                    <input *ngIf="employeeData && !addEmployee && !generateReport" class="form-control" type="text" name="telephone" required [(ngModel)]="employeeData.telephone">
+                    <mat-form-field *ngIf="!employeeData && addEmployee && !generateReport" class="mat-input-form" type="text" name="telephone" appearance="outline">
+                        <mat-label>Telephone</mat-label>
+                        <input matInput [formControl]="telephone" required>
+                        <mat-error *ngIf="telephone.invalid">{{getTelephoneErrorMessage()}}</mat-error>
+                        <mat-hint *ngIf="telephone.untouched">Enter an all digit telephone number</mat-hint>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div *ngIf="!generateReport" class="col">
+                  <div class="form-group">
+                    <label *ngIf="employeeData && !addEmployee && !generateReport" class="col-form-label" for="inputLarge">Address</label>
+                    <input *ngIf="employeeData && !addEmployee && !generateReport" class="form-control" type="text" name="address" required [(ngModel)]="employeeData.address">
+                    <mat-form-field *ngIf="!employeeData && addEmployee && !generateReport" class="mat-input-form" type="text" name="address" appearance="outline">
+                        <mat-label>Address</mat-label>
+                        <input matInput [formControl]="address" required>
+                        <mat-error *ngIf="address.invalid">{{getAddressErrorMessage()}}</mat-error>
+                        <mat-hint *ngIf="address.untouched">Enter the address</mat-hint>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End: Card Body -->
+  
+          <!-- Card footer: holding the Save / Cancel and Delete button for single employee data -->
+          <div class="card-footer text-muted">
+            <div class="form-inline d-flex">
+              <!-- Save -->
+              <button type="button" class="btn btn-primary mr-2" role="button" *ngIf="employeeData && !addEmployee && !generateReport"
+                [disabled]="!hasEmployeeDataChanged() || isSaving || isRemoving" 
+                [ngClass]="{'disabled': !hasEmployeeDataChanged()}"
+                (click)="onEmployeeSave()">
+                <i class="fas fa-check mr-2" *ngIf="!isSaving"></i>
+                <i class="fa fa-spinner fa-spin mr-2" *ngIf="isSaving"></i>
+                Save Employee
+              </button>
+  
+              <!-- Save New Employee-->
+               <button *ngIf="!employeeData && addEmployee && !generateReport" type="button" class="btn btn-primary mr-2" role="button"
+               (click)="onNewEmployeeSave()">
+                <i class="fas fa-check mr-2" *ngIf="!isSaving"></i>
+                <i class="fa fa-spinner fa-spin mr-2" *ngIf="isSaving"></i>
+                Save New Employee
+              </button>
+
+              <!-- Save New Employee-->
+              <button *ngIf="!employeeData && !addEmployee && generateReport" type="button" class="btn btn-primary mr-2" role="button"
+              (click)="onGenerateReport()">
+               <i class="fas fa-check mr-2" *ngIf="!isSaving"></i>
+               <i class="fa fa-spinner fa-spin mr-2" *ngIf="isSaving"></i>
+               Generate Report
+             </button>
+  
+              <!-- Cancel -->
+              <!--It is disaled if no change has been made-->
+              <button type="button" class="btn btn-outline-primary" role="button" *ngIf="employeeData && !addEmployee && !generateReport"
+                [disabled]="!hasEmployeeDataChanged()"
+                [ngClass]="{'disabled': !hasEmployeeDataChanged() || isSaving || isRemoving}"
+                (click)="getEmployeeDetailsData(employeeData.username)">
+                <i class="fas fa-times mr-2"></i>
+                Cancel
+              </button>
+  
+              <button type="button" class="btn btn-outline-primary" role="button" *ngIf="!employeeData && addEmployee && !generateReport"
+                (click)="clearForm()">
+                <i class="fas fa-times mr-2"></i>
+                Clear Fields
+              </button>
+
+              <button type="button" class="btn btn-outline-primary" role="button" *ngIf="!employeeData && !addEmployee && generateReport"
+                (click)="clearFormForReport()">
+                <i class="fas fa-times mr-2"></i>
+                Clear Fields
+              </button>
+  
+              <!-- Delete -->
+              <button type="button" class="btn btn-danger ml-auto" role="button" *ngIf="employeeData && !addEmployee && !generateReport"
+                [disabled]="isRemoving || isSaving"
+                [ngClass]="{'disabled': isRemoving}" (click)="onEmployeeRemove()">
+                <i class="fas fa-trash" *ngIf="!isRemoving"></i>
+                <i class="fa fa-spinner fa-spin" *ngIf="isRemoving"></i>
+              </button>
+            </div>
+          </div>
+          <!-- End: Card footer -->
+        </div>
+      </div>
+    </div>
+  </ng-container>

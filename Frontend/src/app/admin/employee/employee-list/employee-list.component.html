@@ -1,0 +1,64 @@
+<ng-container *ngIf="isProcessing; else employees">
+    <app-loader [isLoading]="isProcessing"></app-loader>
+  </ng-container>
+  
+  <!-- <ng-template #configuration> -->
+  <!-- <ng-container *ngIf="error; else data_container">
+      <app-alert [error]="error"></app-alert>
+    </ng-container> -->
+  
+  <ng-template #employees>
+  
+    <!-- Header -->
+    <div class="row my-4">
+      <div class="col">
+        <h4 class="font-weight-bold">
+          Employees
+          <button class="btn btn-primary float-right"
+          (click) = "onAddEmployee()">
+          <i class="fas fa-user-plus margin--right__sm"></i>
+          Add Employee
+          </button>
+          <button style="margin-right: 2%" class="btn btn-primary float-right"
+          (click) = "onGenerateReport()">
+          <i class="fas fa-file-alt margin--right__sm"></i>
+          Generate Report
+          </button>
+        </h4>
+      </div>
+    </div>
+    <!-- End: Header -->
+  
+    <div class="row mb-5 pb-5">
+  
+      <!-- Employee List column -->
+      <div class="col-sm-4">
+        <div class="col--cards">
+          <h6 class="col--cards__title text-muted margin--bottom__sm">Username</h6>
+          <div class="col--cards__wrapper col--cards__wrapper--list list-group">
+  
+            <!-- Employee Item -->
+            <app-employee-item *ngFor="let employee of employeeModel.all; let i = index" [employeeData]="employee" [index]="i"
+              (selectedEmployeeId)="onEmployeeIdSelected($event)">
+            </app-employee-item>
+            <!-- End: Employee Item -->
+  
+          </div>
+        </div>
+      </div>
+      <!-- End: Employee List column -->
+  
+      <!-- Employee details column -->
+      <div class="col-sm-8">
+        <div class="col--cards">
+          <h6 class="col--cards__title text-muted margin--bottom__sm">Details</h6>
+          <div class="col--cards__wrapper">
+            <app-employee-details [employeeId]="employeeModel.selectedEmployeeId" [addEmployee]="addEmployee" [generateReport]="generateReport" (onSaveSuccess)="getAllEmployees($event)"></app-employee-details>
+          </div>
+        </div>
+      </div>
+      <!-- End: Employee details column -->
+  
+    </div>
+  
+  </ng-template>

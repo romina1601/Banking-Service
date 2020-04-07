@@ -1,0 +1,229 @@
+<ng-container *ngIf="!accountData && !addAccount && !payBill && !transferMoney">
+
+  <div class="row justify-content-center py-5">
+    <div class="alert alert-secondary border-secondary col-sm-11 col-md-8 text-center text-muted" role="alert">
+      <i class="fa fa-mouse-pointer mr-1" aria-hidden="true"></i>
+      Please select an account
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="accountData || addAccount || payBill || transferMoney">
+  <div class="row justify-content-center mt-4">
+    <div class="col">
+      <div class="card border-secondary">
+
+        <!-- Card Header: holding the account id -->
+        <h4 class="card-header bg-secondary" *ngIf="accountData && !addAccount && !payBill && !transferMoney">
+          {{"ID: "}}{{ accountData.accountId }} {{"Client SSN: "}} {{accountData.clientSsn}}
+        </h4>
+        <!-- End: Card Header -->
+
+        <!-- Card Header when pressing add new account button: holding descriptive text -->
+        <h4 class="card-header bg-secondary" *ngIf="!accountData && addAccount && !payBill && !transferMoney">
+          {{"Add new account"}}
+        </h4>
+        <!-- End: Card Header -->
+
+        <!-- Card Header when pressing pay bill button: holding descriptive text -->
+        <h4 class="card-header bg-secondary" *ngIf="!accountData && !addAccount && payBill && !transferMoney">
+         {{"Pay bills"}}
+        </h4>
+        <!-- End: Card Header -->
+
+        <!-- Card Header when pressing pay bill button: holding descriptive text -->
+        <h4 class="card-header bg-secondary" *ngIf="!accountData && !addAccount && !payBill && transferMoney">
+          {{"Transfer Money"}}
+        </h4>
+        <!-- End: Card Header -->
+
+        <!-- Card Body: holding the editable account fields -->
+        <div class="card-body">
+          <div class="my-4">
+              <div class="row" *ngIf="addAccount && !payBill && !transferMoney && !accountData">
+                  <div class="col" > 
+                    <div class="form-group">
+                      <!--<label class="col-form-label" for="inputLarge">Client SSN</label>
+                      <input class="form-control" type="text" name="clientSsn" [formControl]="clientSsnForm" >-->
+                      <mat-form-field  class="mat-input-form" type="text" name="clientSsnForm" appearance="outline">
+                          <mat-label>Client SSN</mat-label>
+                          <input matInput [formControl]="clientSsnForm" required>
+                          <mat-error *ngIf="clientSsnForm.invalid">{{getSsnErrorMessage()}}</mat-error>
+                          <mat-hint *ngIf="clientSsnForm.untouched">Enter a 13-digit SSN</mat-hint>
+                        </mat-form-field>
+                    </div>
+                  </div>
+              </div>
+              <div class="row" *ngIf="!addAccount && payBill || transferMoney && !accountData">
+                <div class="col" > 
+                  <div class="form-group">
+                    <!--<label class="col-form-label" for="inputLarge">Client SSN</label>
+                    <input class="form-control" type="text" name="clientSsn" [formControl]="clientSsnForm" >-->
+                    <mat-form-field  class="mat-input-form" type="text" name="clientSsnForm" appearance="outline">
+                        <mat-label>Client SSN</mat-label>
+                        <input matInput [formControl]="clientSsnForm" required>
+                        <mat-error *ngIf="clientSsnForm.invalid">{{getSsnErrorMessage()}}</mat-error>
+                        <mat-hint *ngIf="clientSsnForm.untouched">Enter a 13-digit SSN</mat-hint>
+                      </mat-form-field>
+                  </div>
+                </div>
+                <div class="col"> 
+                  <div class="form-group">
+                    <mat-form-field *ngIf="!addAccount && !accountData && payBill || transferMoney">
+                      <mat-label>From Acccount</mat-label>
+                      <mat-select (selectionChange)="fromAccountSelect($event.value)" [formControl]="fromAccountForm" required>
+                        <mat-option>--</mat-option>
+                        <mat-option *ngFor="let account of accounts" [value]="account">
+                          {{"ID: "}}{{account.accountId}} {{"$"}}{{account.balance}}
+                        </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="fromAccountForm.hasError('required')">Please choose an account</mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label *ngIf="accountData && !addAccount && !payBill && !transferMoney" class="col-form-label" for="inputLarge">Type</label>
+                  <input *ngIf="!addAccount && accountData && !payBill && !transferMoney" class="form-control" type="text" name="accountType" required [(ngModel)]="accountData.accountType">
+                  <mat-form-field *ngIf="!accountData && addAccount && !payBill && !transferMoney">
+                      <mat-select placeholder="Account Type" (selectionChange)="accountTypeSelect($event.value)" [formControl]="accountTypeForm" required>
+                            <mat-option>-Select an option-</mat-option>
+                            <mat-option *ngFor="let type of accountTypes" [value]="type">
+                              {{type}}
+                            </mat-option>
+                      </mat-select>
+                      <mat-error *ngIf="accountTypeForm.hasError('required')">Please choose an account type</mat-error>
+                  </mat-form-field>
+                  <mat-form-field *ngIf="!accountData && !addAccount && payBill && !transferMoney" class="mat-input-form" type="text" name="billDetailsForm" appearance="outline">
+                      <mat-label>Bill Details</mat-label>
+                      <input matInput [formControl]="billDetailsForm" required>
+                      <mat-error *ngIf="billDetailsForm.invalid">{{getBillDetailsErrorMessage()}}</mat-error>
+                      <mat-hint *ngIf="balanceForm.untouched">Enter bill name and details</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field *ngIf="!accountData && !addAccount && !payBill && transferMoney" class="mat-input-form" type="text" name="toAccountForm" appearance="outline">
+                      <mat-label>Destination Account</mat-label>
+                      <input matInput [formControl]="toAccountForm" required>
+                      <mat-error *ngIf="toAccountForm.invalid">{{getToAccountErrorMessage()}}</mat-error>
+                      <mat-hint *ngIf="toAccountForm.untouched">Enter the destination account ID</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <label *ngIf="accountData && !addAccount && !payBill && !transferMoney" class="col-form-label" for="inputLarge">Balance</label>
+                  <mat-form-field *ngIf="!accountData && addAccount && !payBill && !transferMoney" class="mat-input-form" type="text" name="balanceForm" appearance="outline">
+                      <mat-label>Balance</mat-label>
+                      <input matInput [formControl]="balanceForm" required>
+                      <mat-error *ngIf="balanceForm.invalid">{{getBalanceErrorMessage()}}</mat-error>
+                      <mat-hint *ngIf="balanceForm.untouched">Enter a positive real number</mat-hint>
+                  </mat-form-field>
+                  <input *ngIf="!addAccount && accountData && !payBill && !transferMoney" class="form-control" type="text" name="balance" required [(ngModel)]="accountData.balance">
+                  <mat-form-field *ngIf="!accountData && !addAccount && payBill || transferMoney" class="mat-input-form" type="text" name="amountForm" appearance="outline">
+                      <mat-label>Amount</mat-label>
+                      <input matInput [formControl]="amountForm" required>
+                      <mat-error *ngIf="amountForm.invalid">{{getAmountErrorMessage()}}</mat-error>
+                      <mat-hint *ngIf="amountForm.untouched">Enter a positive amount</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <div *ngIf="accountData && !addAccount && !payBill" class="row">
+              <div class="col" > 
+                <div class="form-group">
+                  <label class="col-form-label" for="inputLarge">Date of creation</label>
+                  <input class="form-control" type="text" name="date_of_creation" required [(ngModel)]="accountData.creationDate" [readOnly]="true">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- End: Card Body -->
+
+        <!-- Card footer: holding the Save / Cancel and Delete button for single account data -->
+        <div class="card-footer text-muted">
+          <div class="form-inline d-flex">
+            <!-- Save -->
+            <button type="button" class="btn btn-primary mr-2" role="button" *ngIf="accountData && !addAccount && !payBill && !transferMoney"
+              [disabled]="!hasAccountDataChanged() || isSaving || isRemoving" [ngClass]="{'disabled': !hasAccountDataChanged()}"
+              (click)="onAccountSave()">
+              <i class="fas fa-check mr-2" *ngIf="!isSaving"></i>
+              <i class="fa fa-spinner fa-spin mr-2" *ngIf="isSaving"></i>
+              Save Account
+            </button>
+
+            <!-- Save New Account -->
+            <button type="button" class="btn btn-primary mr-2" role="button" *ngIf="addAccount"
+              (click)="onNewAccountSave()">
+              <i class="fas fa-check mr-2" *ngIf="!isSaving"></i>
+              <i class="fa fa-spinner fa-spin mr-2" *ngIf="isSaving"></i>
+              Save New Account
+            </button>
+
+            <!-- Pay Bill -->
+            <button type="button" class="btn btn-primary mr-2" role="button" *ngIf="payBill"
+              (click)="onPayBill()">
+              <i class="fas fa-check mr-2" *ngIf="!isSaving"></i>
+              <i class="fa fa-spinner fa-spin mr-2" *ngIf="isSaving"></i>
+              Pay Bill
+            </button>
+
+            <!-- Transfer Money -->
+            <button type="button" class="btn btn-primary mr-2" role="button" *ngIf="transferMoney"
+              (click)="onTransferMoney()">
+              <i class="fas fa-check mr-2" *ngIf="!isSaving"></i>
+              <i class="fa fa-spinner fa-spin mr-2" *ngIf="isSaving"></i>
+              Transfer Money
+            </button>
+
+            <!-- Cancel -->
+            <button type="button" class="btn btn-outline-primary" role="button" *ngIf="accountData && !addAccount"
+            [disabled]="!hasAccountDataChanged()"
+              [ngClass]="{'disabled': !hasAccountDataChanged() || isSaving || isRemoving}"
+              (click)="getAccountDetailsData(accountData.accountId)">
+              <i class="fas fa-times mr-2"></i>
+              Cancel
+            </button>
+
+            <!-- Clear Form (when adding new account) -->
+            <button type="button" class="btn btn-outline-primary" role="button" *ngIf="addAccount"
+              (click)="clearForm2()">
+              <i class="fas fa-times mr-2"></i>
+              Clear Form
+            </button>
+
+            <!-- Clear Form (when paying a new bill) -->
+            <button type="button" class="btn btn-outline-primary" role="button" *ngIf="payBill"
+              (click)="clearFormPayBill()">
+              <i class="fas fa-times mr-2"></i>
+              Clear Form
+            </button>
+
+            <!-- Clear Form (when transfering money) -->
+            <button type="button" class="btn btn-outline-primary" role="button" *ngIf="transferMoney"
+              (click)="clearFormTransferMoney()">
+              <i class="fas fa-times mr-2"></i>
+              Clear Form
+            </button>
+
+            <!-- Delete -->
+            <button *ngIf="accountData" type="button" class="btn btn-danger ml-auto" role="button" [disabled]="isRemoving || isSaving"
+              [ngClass]="{'disabled': isRemoving}" (click)="onAccountRemove()">
+              <i class="fas fa-trash" *ngIf="!isRemoving"></i>
+              <i class="fa fa-spinner fa-spin" *ngIf="isRemoving"></i>
+            </button>
+
+            
+          </div>
+        </div>
+        <!-- End: Card footer -->
+
+      </div>
+    </div>
+</ng-container>

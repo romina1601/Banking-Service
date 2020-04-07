@@ -1,0 +1,70 @@
+<ng-container *ngIf="isProcessing; else accounts">
+    <app-loader [isLoading]="isProcessing"></app-loader>
+  </ng-container>
+  
+  <!-- <ng-template #configuration> -->
+  <!-- <ng-container *ngIf="error; else data_container">
+      <app-alert [error]="error"></app-alert>
+    </ng-container> -->
+  
+  <ng-template #accounts>
+  
+    <!-- Header -->
+    <div class="row my-4">
+      <div class="col">
+        <h4 class="font-weight-bold">
+          Accounts
+          <button class="btn btn-primary float-right"
+          (click) = "onAddAccount()">
+            <i class="fas fa-user-plus margin--right__sm"></i>
+            Add Account
+          </button>
+          <button style="margin-right: 2%" class="btn btn-primary float-right"
+          (click) = "onPayBill()">
+            <i class="fas fa-file-invoice margin--right__sm"></i>
+            Pay Bill
+          </button>
+          <button style="margin-right: 2%" class="btn btn-primary float-right"
+          (click) = "onTransferMoney()">
+            <i class="fas fa-money-check-alt margin--right__sm"></i>
+            Transfer Money
+          </button>
+        </h4>
+      </div>
+    </div>
+    <!-- End: Header -->
+  
+    <div class="row mb-5 pb-5">
+  
+      <!-- Account List column -->
+      <div class="col-sm-4">
+        <div class="col--cards">
+          <h6 class="col--cards__title text-muted margin--bottom__sm">Acount List</h6>
+          <div class="col--cards__wrapper col--cards__wrapper--list list-group">
+  
+            <!-- Account Item -->
+            <app-account-item *ngFor="let account of accountModel.all" [accountData]="account" [index]="account.accountId"
+              (selectedAccountId)="onAccountIdSelected($event)">
+            </app-account-item>
+            <!-- End: Account Item -->
+  
+          </div>
+        </div>
+      </div>
+      <!-- End: Account List column -->
+  
+      <!-- Account details column -->
+      <div class="col-sm-8">
+        <div class="col--cards">
+          <h6 class="col--cards__title text-muted margin--bottom__sm">Details</h6>
+          <div class="col--cards__wrapper">
+            <app-account-details [addAccount]="addAccount" [accountId]="accountModel.selectedAccountId" [payBill]="payBill" 
+            [transferMoney]="transferMoney" (onSaveSuccess)="getAllAccounts($event)"></app-account-details>
+          </div>
+        </div>
+      </div>
+      <!-- End: Account details column -->
+  
+    </div>
+  
+  </ng-template>
